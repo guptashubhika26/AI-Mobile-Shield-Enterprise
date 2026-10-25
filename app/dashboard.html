@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Mobile Shield Enterprise</title>
+    <link rel="icon" href="data:,">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #0b1120;
+            color: #e5e7eb;
+        }
+        header {
+            padding: 22px 30px;
+            background: #111c30;
+            border-bottom: 1px solid #29364c;
+        }
+        header h1 { margin: 0; font-size: 24px; }
+        header p { color: #94a3b8; margin-bottom: 0; }
+        main { padding: 25px; max-width: 1300px; margin: auto; }
+        .status {
+            padding: 14px;
+            background: #123326;
+            border: 1px solid #24734d;
+            border-radius: 10px;
+            margin-bottom: 22px;
+        }
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 16px;
+            margin-bottom: 25px;
+        }
+        .card, .panel {
+            background: #111c30;
+            border: 1px solid #29364c;
+            border-radius: 12px;
+            padding: 20px;
+        }
+        .card p { color: #94a3b8; margin: 0 0 12px; }
+        .number { font-size: 30px; font-weight: bold; }
+        .green { color: #4ade80; }
+        .red { color: #fb7185; }
+        .yellow { color: #fbbf24; }
+        .panel h2 { font-size: 19px; margin-top: 0; }
+        button {
+            border: 0;
+            background: #2563eb;
+            color: white;
+            padding: 11px 16px;
+            border-radius: 7px;
+            cursor: pointer;
+            margin: 4px 5px 12px 0;
+        }
+        button:hover { background: #1d4ed8; }
+        #message { color: #94a3b8; }
+        .table-wrap { overflow-x: auto; }
+        
+.toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 15px 0 20px;
+}
+
+.toolbar input {
+    flex: 1;
+    min-width: 220px;
+    background: #0b1120;
+    color: #e5e7eb;
+    border: 1px solid #334155;
+    padding: 12px;
+    border-radius: 8px;
+}
+
+.toolbar select {
+    background: #111c30;
+    color: #e5e7eb;
+    border: 1px solid #334155;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.toolbar input:focus,
+.toolbar select:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+        
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 1000px;
+    table-layout: auto;
+}
+
+       
+th, td {
+    text-align: left;
+    padding: 13px 12px;
+    border-bottom: 1px solid #29364c;
+    vertical-align: top;
+    overflow-wrap: anywhere;
+    line-height: 1.5;
+}
+
+th {
+    color: #94a3b8;
+    white-space: nowrap;
+}
+
+td {
+    color: #e5e7eb;
+}
+th:nth-child(1),
+td:nth-child(1) {
+    min-width: 190px;
+    white-space: nowrap;
+}
+
+th:nth-child(2),
+td:nth-child(2) {
+    min-width: 120px;
+}
+
+th:nth-child(3),
+td:nth-child(3) {
+    min-width: 150px;
+}
+
+th:nth-child(4),
+td:nth-child(4) {
+    min-width: 170px;
+}
+
+th:nth-child(5),
+td:nth-child(5) {
+    min-width: 240px;
+}
+
+        .tag { font-weight: bold; }
+        
+
+.severity-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    white-space: nowrap;
+    min-width: 76px;
+    text-align: center;
+}
+
+.severity-low {
+    color: #86efac;
+    background: #14532d;
+}
+
+.severity-medium {
+    color: #fde68a;
+    background: #78350f;
+}
+
+.severity-high {
+    color: #fecaca;
+    background: #7f1d1d;
+}
+
+.severity-critical {
+    color: #ffffff;
+    background: #991b1b;
+    border: 1px solid #f87171;
+}
+
+.security-alert-row {
+    outline: 1px solid #ef4444;
+    background: rgba(127, 29, 29, 0.18);
+}
+
+.security-alert-row td {
+    border-bottom: 1px solid #7f1d1d;
+}
+
+
+        
+        footer { padding: 20px; color: #94a3b8; text-align: center; }
+        @media (max-width: 600px) {
+            main { padding: 14px; }
+            header { padding: 18px; }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>🛡️ AI Mobile Shield Enterprise</h1>
+    <p>Security Monitoring Dashboard</p>
+</header>
+
+<main>
+
+<div class="status">
+    <strong>● Live Security Monitor</strong>
+    <span id="backendStatus">Connecting...</span>
+    <span id="lastUpdated">Waiting for first update...</span>
+</div>
+
+        
+<div class="cards">
+    <div class="card">
+        <p>Total Security Events</p>
+        <div class="number" id="eventCount">0</div>
+    </div>
+
+    <div class="card">
+        <p>High-Severity Events</p>
+        <div class="number yellow" id="highCount">0</div>
+    </div>
+
+    <div class="card">
+        <p>Critical Events</p>
+        <div class="number red" id="criticalCount">0</div>
+    </div>
+
+    <div class="card">
+        <p>Simulated Events</p>
+        <div class="number green" id="simulatedCount">0</div>
+    </div>
+</div>
+
+<div class="card">
+    <h2>Backend Status</h2>
+    
+<div class="card">
+    <h2>Integration Status</h2>
+    <p>Database: <span id="databaseStatus">Checking...</span></p>
+    <p>Security Coverage: <span id="coverageStatus">Checking...</span></p>
+    <p id="coverageNote">
+        Checking configured security integrations...
+    </p>
+</div>
+
+    <p>Backend: <span id="apiStatus">Checking...</span></p>
+    <button type="button" onclick="checkBackend()">Refresh Status</button>
+    <p id="message"></p>
+</div>
+
+    <div id="highAlert" style="display:none; background:#7f1d1d; color:white; padding:18px; margin:20px 0; border:2px solid #ef4444; border-radius:10px;">
+    <h2>🚨 HIGH SECURITY ALERT!</h2>
+    <p id="alertMessage">High severity event detected!</p>
+    <button onclick="document.getElementById('highAlert').style.display='none'">
+        Dismiss Alert
+    </button>
+</div>
+
+    <div class="card">
+        <h2>Recent Security Events</h2>
+        
+<div class="toolbar">
+    <input
+        type="search"
+        id="searchInput"
+        placeholder="Search event, asset, or source..."
+        aria-label="Search security events"
+    >
+
+    <select id="severityFilter" aria-label="Filter by severity">
+        <option value="all">All Severities</option>
+        <option value="critical">Critical</option>
+        <option value="high">High</option>
+        <option value="medium">Medium</option>
+        <option value="low">Low</option>
+    </select>
+</div>
+
+        <div class="table-wrap">
+            <table>
+                
+<thead>
+    <tr>
+        <th>Event Type</th>
+        <th>Severity</th>
+        <th>Source</th>
+        <th>Asset ID</th>
+        <th>Description</th>
+        <th>Event Time</th>
+        <th>Event Mode</th>
+    </tr>
+</thead>
+
+                <tbody id="eventsTable">
+                    <tr><td colspan="3">Loading events...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<footer>AI Mobile Shield Enterprise</footer>
+
+<script>
+async function checkBackend() {
+    const api = document.getElementById("apiStatus");
+    const count = document.getElementById("eventCount");
+    const table = document.getElementById("eventsTable");
+    const message = document.getElementById("message");
+
+    try {
+        const health = await fetch("/health");
+        if (!health.ok) throw new Error("Backend unavailable");
+        
+const healthData = await health.json();
+
+const databaseStatus = document.getElementById("databaseStatus");
+const coverageStatus = document.getElementById("coverageStatus");
+const coverageNote = document.getElementById("coverageNote");
+
+databaseStatus.textContent = healthData.database || "Unknown";
+coverageStatus.textContent = healthData.security_coverage || "Unknown";
+
+if (healthData.security_coverage === "not_configured") {
+    coverageNote.textContent =
+        "Security integrations are not configured yet. This dashboard currently displays recorded events.";
+} else {
+    coverageNote.textContent =
+        "Coverage status reported by the backend; verify individual integrations separately.";
+}
+
+
+        api.textContent = "Connected";
+        document.getElementById("backendStatus").textContent = "Connected";
+
+        const response = await fetch("/api/v1/events");
+        if (!response.ok) throw new Error("Events API unavailable");
+
+        const data = await response.json();
+        const events = data.events || [];
+        // Check for high-severity security events
+const highRiskEvents = events.filter(
+    event => ["high", "critical"].includes(
+        (event.severity || "").toLowerCase()
+    )
+);
+
+const alertBox = document.getElementById("highAlert");
+const alertMessage = document.getElementById("alertMessage");
+
+if (highRiskEvents.length > 0) {
+    alertBox.style.display = "block";
+   
+const simulatedHighRisk = highRiskEvents.every(
+    event => event.simulated === true
+);
+
+alertMessage.textContent = simulatedHighRisk
+    ? `${highRiskEvents.length} high-risk test event(s) detected. This is simulated data, not proof of a real attack.`
+    : `${highRiskEvents.length} high-risk event(s) recorded. Review the event details to verify them.`;
+
+} else {
+    alertBox.style.display = "none";
+}
+
+        
+count.textContent = events.length;
+
+document.getElementById("highCount").textContent =
+    events.filter(event =>
+        (event.severity || "").toLowerCase() === "high"
+    ).length;
+
+document.getElementById("criticalCount").textContent =
+    events.filter(event =>
+        (event.severity || "").toLowerCase() === "critical"
+    ).length;
+
+document.getElementById("simulatedCount").textContent =
+    events.filter(event => event.simulated === true).length;
+
+        table.innerHTML = "";
+
+        if (events.length === 0) {
+            table.innerHTML =
+                '<tr><td colspan="3">No security events found.</td></tr>';
+        } else {
+            events.forEach(event => {
+                const row = document.createElement("tr");
+
+
+    const values = [
+    event.event_type,
+    event.severity,
+    event.source,
+    event.asset_id,
+    event.description,
+    event.received_at
+        ? new Date(event.received_at).toLocaleString()
+        : "N/A",
+    event.simulated ? "Simulated/Test" : "Reported"
+
+]
+row.classList.toggle(
+    "security-alert-row",
+    String(event.event_type || "").toLowerCase() ===
+        "repeated_failed_login"
+);
+
+values.forEach((value, index) => {
+    const cell = document.createElement("td");
+
+    if (index === 1) {
+        const badge = document.createElement("span");
+        const severity = String(value || "low").toLowerCase();
+
+        badge.className =
+            "severity-badge severity-" +
+            (["low", "medium", "high", "critical"].includes(severity)
+                ? severity
+                : "low");
+
+        badge.textContent = severity.toUpperCase();
+
+        if (
+            String(event.event_type || "").toLowerCase() ===
+            "repeated_failed_login"
+        ) {
+            badge.textContent = "HIGH ALERT";
+        }
+
+        cell.appendChild(badge);
+    } else {
+        cell.textContent = value ?? "N/A";
+    }
+
+    row.appendChild(cell);
+});
+
+table.appendChild(row);
+
+            });
+        }
+
+        message.textContent = "Dashboard updated successfully.";
+        document.getElementById("lastUpdated").textContent =
+    "Last checked: " + new Date().toLocaleTimeString();
+    } catch (error) {
+            console.error("Dashboard connection error:", error);
+        api.textContent = "Disconnected";
+        document.getElementById("backendStatus").textContent = "Disconnected";
+        count.textContent = "Unavailable";
+        message.textContent =
+            "Could not connect. Check that the backend is running.";
+    }
+}
+
+checkBackend();
+setInterval(checkBackend, 10000);
+
+
+function filterEvents() {
+    const query = document.getElementById("searchInput").value.toLowerCase().trim();
+    const severity = document.getElementById("severityFilter").value.toLowerCase();
+
+    document.querySelectorAll("#eventsTable tr").forEach(row => {
+        const rowText = row.textContent.toLowerCase();
+        const rowSeverity = row.cells[1]?.textContent.toLowerCase().trim() || "";
+
+        const matchesSearch = rowText.includes(query);
+        const matchesSeverity =
+            severity === "all" || rowSeverity.includes(severity);
+
+        row.style.display = matchesSearch && matchesSeverity ? "" : "none";
+    });
+}
+
+document.getElementById("searchInput").addEventListener("input", filterEvents);
+document.getElementById("severityFilter").addEventListener("change", filterEvents);
+
+</script>
+</body>
+</html>
